@@ -2,9 +2,13 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
+#include <iterator>
 #include <limits>
 #include <random>
 #include <ranges>
+#include <tuple>
+#include <vector>
 
 #include "Model.h"
 
@@ -97,7 +101,7 @@ public:
         for (auto routeIt = std::begin(solution.getRoutes()); routeIt != std::end(solution.getRoutes()); ++routeIt) {
           for (auto it = std::begin(*routeIt); it != std::next(std::end(*routeIt)); ++it) {
             const auto prevIndex = it == std::begin(*routeIt) ? problem_.getCustomerSize() : *std::prev(it); // 最初はdepot。
-            const auto nextIndex = it == std::end(*routeIt) ? problem_.getCustomerSize() : *it; // 最後もdepot。
+            const auto nextIndex = it == std::end(*routeIt) ? problem_.getCustomerSize() : *it;              // 最後もdepot。
 
             const auto delta = (problem_.getDistances()[prevIndex][index] + problem_.getDistances()[index][nextIndex]) - problem_.getDistances()[prevIndex][nextIndex];
 
