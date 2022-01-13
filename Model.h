@@ -4,21 +4,35 @@
 #include <tuple>
 #include <vector>
 
+#include <boost/container/small_vector.hpp>
+
 namespace lns {
+
+using Locations = std::vector<std::tuple<float, float>>;
+using Distances = std::vector<float>;
+using DistanceMatrix = std::vector<Distances>;
+
+using Route = boost::container::small_vector<int, 32>;
+using Routes = boost::container::small_vector<Route, 8>;
 
 class Problem final {
   int vehicleSize_;
+  int vehicleCapacity_;
   int customerSize_;
-  std::vector<std::tuple<float, float>> locations_;
-  std::vector<std::vector<float>> distances_;
+  Locations locations_;
+  DistanceMatrix distanceMatrix_;
 
 public:
-  explicit Problem(int vehicleSize, int customerSize, const std::vector<std::tuple<float, float>> &locations, const std::vector<std::vector<float>> &distances) noexcept : vehicleSize_{vehicleSize}, customerSize_{customerSize}, locations_{locations}, distances_{distances} {
+  explicit Problem(int vehicleSize, int customerSize, const Locations &locations, const DistanceMatrix &distanceMatrix) noexcept : vehicleSize_{vehicleSize}, vehicleCapacity_{(customerSize + vehicleSize - 1) / vehicleSize}, customerSize_{customerSize}, locations_{locations}, distanceMatrix_{distanceMatrix} {
     ;
   }
 
   auto getVehicleSize() const noexcept {
     return vehicleSize_;
+  }
+
+  auto getVehicleCapacity() const noexcept {
+    return vehicleCapacity_;
   }
 
   auto getCustomerSize() const noexcept {
@@ -29,16 +43,16 @@ public:
     return locations_;
   }
 
-  const auto &getDistances() const noexcept {
-    return distances_;
+  const auto &getDistanceMatrix() const noexcept {
+    return distanceMatrix_;
   }
 };
 
 class Solution final {
-  std::vector<std::vector<int>> routes_;
+  Routes routes_;
 
 public:
-  explicit Solution(const std::vector<std::vector<int>> &routes) noexcept : routes_{routes} {
+  explicit Solution(const Routes &routes) noexcept : routes_{routes} {
     ;
   }
 
@@ -59,13 +73,13 @@ inline auto getCost(const Problem &problem, const Solution &solution) noexcept {
       continue;
     }
 
-    result += problem.getDistances()[problem.getCustomerSize()][route[0]];
+    result += problem.getDistanceMatrix()[problem.getCustomerSize()][route[0]];
 
     for (const auto &i : std::views::iota(1, static_cast<int>(std::size(route)))) {
-      result += problem.getDistances()[route[i - 1]][route[i]];
+      result += problem.getDistanceMatrix()[route[i - 1]][route[i]];
     }
 
-    result += problem.getDistances()[route.back()][problem.getCustomerSize()];
+    result += problem.getDistanceMatrix()[route.back()][problem.getCustomerSize()];
   }
 
   return result;

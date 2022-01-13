@@ -1,3 +1,4 @@
+import os.path
 import matplotlib.pyplot as plot
 import sys
 
@@ -38,6 +39,7 @@ def main():
     figure.set_figwidth(8)
     figure.set_figheight(8)
 
+    plot.savefig(os.path.join(os.path.dirname(sys.argv[1]), os.path.splitext(os.path.basename(sys.argv[1]))[0] + ".png"))
     plot.show()
 
 

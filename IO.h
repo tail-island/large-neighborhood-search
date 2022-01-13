@@ -8,7 +8,6 @@
 #include <sstream>
 #include <string>
 #include <tuple>
-#include <vector>
 
 #include "Model.h"
 
@@ -29,12 +28,11 @@ inline auto readProblem(std::istream &stream) noexcept {
   const auto customerSize = readData<int>(stream);
 
   const auto locations = [&] {
-    auto result = std::vector<std::tuple<float, float>>{};
+    auto result = Locations{};
 
     std::ranges::copy(
         std::views::iota(0, customerSize) | std::views::transform([&](const auto &_) {
           const auto x = readData<float>(stream);
-          stream.get(); // 区切り文字のtabを飛ばします。
           const auto y = readData<float>(stream);
 
           return std::make_tuple(x, y);
@@ -46,12 +44,12 @@ inline auto readProblem(std::istream &stream) noexcept {
     return result;
   }();
 
-  const auto distances = [&] {
-    auto result = std::vector<std::vector<float>>{};
+  const auto distanceMatrix = [&] {
+    auto result = DistanceMatrix{};
 
     std::ranges::copy(
         locations | std::views::transform([&](const auto &location1) {
-          auto result = std::vector<float>{};
+          auto result = Distances{};
 
           std::ranges::copy(
               locations | std::views::transform([&](const auto &location2) {
@@ -66,7 +64,7 @@ inline auto readProblem(std::istream &stream) noexcept {
     return result;
   }();
 
-  return Problem{vehicleSize, customerSize, locations, distances};
+  return Problem{vehicleSize, customerSize, locations, distanceMatrix};
 }
 
 inline auto writeSolution(const Solution &solution, std::ostream &stream) noexcept {

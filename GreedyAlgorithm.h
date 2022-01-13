@@ -5,6 +5,8 @@
 #include <ranges>
 #include <vector>
 
+#include <boost/container/small_vector.hpp>
+
 #include "Model.h"
 
 namespace lns {
@@ -32,17 +34,17 @@ public:
         return result;
       }();
 
-      auto result = std::vector<std::vector<int>>{};
+      auto result = Routes{};
 
       std::ranges::copy(
           std::views::iota(0, problem_.getVehicleSize()) | std::views::transform([&](const auto &_) {
-            auto result = std::vector<int>{};
+            auto result = Route{};
 
-            for (auto i = 0; i < (problem_.getCustomerSize() + problem_.getVehicleSize() - 1) / problem_.getVehicleSize() && !std::empty(indices); ++i) {
+            for (auto i = 0; i < problem_.getVehicleCapacity() && !std::empty(indices); ++i) {
               const auto lastIndex = std::empty(result) ? problem_.getCustomerSize() : result.back();
 
               const auto it = std::ranges::min_element(indices, [&](const auto &index1, const auto &index2) {
-                return problem_.getDistances()[lastIndex][index1] < problem_.getDistances()[lastIndex][index2];
+                return problem_.getDistanceMatrix()[lastIndex][index1] < problem_.getDistanceMatrix()[lastIndex][index2];
               });
 
               result.emplace_back(*it);
