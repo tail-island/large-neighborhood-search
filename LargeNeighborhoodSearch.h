@@ -132,7 +132,7 @@ public:
 
     auto tempSolution = result;
 
-    for (auto i = 0; i < static_cast<int>(problem_.getCustomerSize() * maxChangeRatio); ++i) { // 破壊で削除されるお客様の数を少しずつ増やしていきます。
+    for (const auto &i : std::views::iota(0, static_cast<int>(problem_.getCustomerSize() * maxChangeRatio))) { // 破壊で削除されるお客様の数を少しずつ増やしていきます。
       std::cerr << "Removing: " << (i + 1) << std::endl;
 
       for (auto j = 0; j < maxTrySize; ++j) { // 一定の回数トライします。
