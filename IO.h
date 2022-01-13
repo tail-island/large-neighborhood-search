@@ -24,15 +24,15 @@ inline auto readData(std::istream &stream) noexcept {
 }
 
 inline auto readProblem(std::istream &stream) noexcept {
-  const auto vehiclesSize = readData<int>(stream);
+  const auto vehicleSize = readData<int>(stream);
 
-  const auto customersSize = readData<int>(stream);
+  const auto customerSize = readData<int>(stream);
 
   const auto locations = [&] {
     auto result = std::vector<std::tuple<float, float>>{};
 
     std::ranges::copy(
-        std::views::iota(0, customersSize) | std::views::transform([&](const auto &_) {
+        std::views::iota(0, customerSize) | std::views::transform([&](const auto &_) {
           const auto x = readData<float>(stream);
           stream.get(); // 区切り文字のtabを飛ばします。
           const auto y = readData<float>(stream);
@@ -66,7 +66,7 @@ inline auto readProblem(std::istream &stream) noexcept {
     return result;
   }();
 
-  return Problem{vehiclesSize, customersSize, locations, distances};
+  return Problem{vehicleSize, customerSize, locations, distances};
 }
 
 inline auto writeSolution(const Solution &solution, std::ostream &stream) noexcept {

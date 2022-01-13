@@ -13,7 +13,7 @@ class Problem final {
   std::vector<std::vector<float>> distances_;
 
 public:
-  explicit Problem(int vehiclesSize, int customersSize, const std::vector<std::tuple<float, float>> &locations, const std::vector<std::vector<float>> &distances) noexcept : vehicleSize_{vehiclesSize}, customerSize_{customersSize}, locations_{locations}, distances_{distances} {
+  explicit Problem(int vehicleSize, int customerSize, const std::vector<std::tuple<float, float>> &locations, const std::vector<std::vector<float>> &distances) noexcept : vehicleSize_{vehicleSize}, customerSize_{customerSize}, locations_{locations}, distances_{distances} {
     ;
   }
 
