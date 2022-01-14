@@ -8,12 +8,15 @@
 
 namespace lns {
 
+constexpr int maxCapacity = 64;    // small_vectorの要素数なので、これを超えても動作します。遅くなりますけど。。。
+constexpr int maxVehicleSize = 16; // 同上。
+
 using Locations = std::vector<std::tuple<float, float>>;
 using Distances = std::vector<float>;
 using DistanceMatrix = std::vector<Distances>;
 
-using Route = boost::container::small_vector<int, 64>;
-using Routes = boost::container::small_vector<Route, 16>;
+using Route = boost::container::small_vector<int, maxCapacity>;
+using Routes = boost::container::small_vector<Route, maxVehicleSize>;
 
 class Problem final {
   int vehicleSize_;

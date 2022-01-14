@@ -13,10 +13,10 @@
 
 namespace lns {
 
-constexpr float maxChangeRatio = 0.3;
+constexpr float maxChangeRatio = 0.5;
 constexpr int maxTrySize = 200'000;
 
-using Indices = boost::container::small_vector<int, 32>;
+using Indices = boost::container::small_vector<int, static_cast<int>(maxCapacity * maxChangeRatio)>;
 using RandomEngine = std::mt19937;
 
 // 削除用のヒューリスティック。
@@ -38,7 +38,7 @@ public:
 
     for (auto i = 0; i < removeSize;) {
       const auto weights = [&, &routes = std::get<0>(result)] { // ルート選択の重みを作成します。重み付けしないと、短いルートのお客様が選択されやすくなってしまうため。
-        auto result = boost::container::small_vector<int, 16>{};
+        auto result = boost::container::small_vector<int, static_cast<int>(maxCapacity * maxChangeRatio)>{};
 
         std::ranges::copy(
             routes | std::views::transform([](const auto &route) { return std::size(route); }),
