@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <random>
@@ -14,36 +13,47 @@
 
 namespace lns {
 
-constexpr float maxChangeRatio = 0.2;
-constexpr int maxTrySize = 100'000;
+constexpr float maxChangeRatio = 0.3;
+constexpr int maxTrySize = 200'000;
 
-using Indices = boost::container::small_vector<int, 16>;
+using Indices = boost::container::small_vector<int, 32>;
+using RandomEngine = std::mt19937;
 
 // 削除用のヒューリスティック。
 // とりあえず版です。問題に合わせて修正してください。
 
 class DestroyHeuristic final {
   const Problem &problem_;
-  std::mt19937 &random_number_generator_;
+  RandomEngine &randomEngine_;
 
 public:
-  explicit DestroyHeuristic(const Problem &problem, std::mt19937 &random_number_generator) noexcept : problem_{problem}, random_number_generator_{random_number_generator} {
+  explicit DestroyHeuristic(const Problem &problem, RandomEngine &randomEngine) noexcept : problem_{problem}, randomEngine_{randomEngine} {
     ;
   }
 
   auto operator()(const Solution &solution, int removeSize) noexcept {
     // 今回は、ランダムに削除してみました。
 
-    auto result = std::make_tuple(solution, Indices{});
+    auto result = std::make_tuple(solution.getRoutes(), Indices{});
 
     for (auto i = 0; i < removeSize;) {
-      auto &route = std::get<0>(result).getRoutes()[std::uniform_int_distribution{0, static_cast<int>(std::size(std::get<0>(result).getRoutes())) - 1}(random_number_generator_)];
+      const auto weights = [&, &routes = std::get<0>(result)] { // ルート選択の重みを作成します。重み付けしないと、短いルートのお客様が選択されやすくなってしまうため。
+        auto result = boost::container::small_vector<int, 16>{};
+
+        std::ranges::copy(
+            routes | std::views::transform([](const auto &route) { return std::size(route); }),
+            std::back_inserter(result));
+
+        return result;
+      }();
+
+      auto &route = std::get<0>(result)[std::discrete_distribution<>{std::begin(weights), std::end(weights)}(randomEngine_)];
 
       if (std::empty(route)) {
         continue;
       }
 
-      const auto it = std::begin(route) + std::uniform_int_distribution{0, static_cast<int>(std::size(route)) - 1}(random_number_generator_);
+      const auto it = std::begin(route) + std::uniform_int_distribution{0, static_cast<int>(std::size(route)) - 1}(randomEngine_);
 
       std::get<1>(result).emplace_back(*it);
       route.erase(it);
@@ -51,7 +61,7 @@ public:
       ++i;
     }
 
-    return result;
+    return std::make_tuple(Solution{std::get<0>(result)}, std::get<1>(result));
   }
 };
 
@@ -60,31 +70,30 @@ public:
 
 class RapairHeuristic final {
   const Problem &problem_;
-  std::mt19937 &random_number_generator_;
+  RandomEngine &randomEngine_;
 
 public:
-  explicit RapairHeuristic(const Problem &problem, std::mt19937 &random_number_generator) noexcept : problem_{problem}, random_number_generator_{random_number_generator} {
+  explicit RapairHeuristic(const Problem &problem, RandomEngine &randomEngine) noexcept : problem_{problem}, randomEngine_{randomEngine} {
     ;
   }
 
   auto operator()(const std::tuple<Solution, Indices> &solutionAndIndices) noexcept {
     // 今回は、距離の増加が最も少ない場所に追加してみました。
 
-    auto [solution, indices] = solutionAndIndices;
+    const auto &[solution, indices] = solutionAndIndices;
 
-    auto result = solution;
+    auto result = solution.getRoutes();
+    auto resultIndices = indices;
 
-    // 未訪問のお客様を追加します。
+    std::ranges::shuffle(resultIndices, randomEngine_); // 追加順で結果が変わるので、念の為にシャッフルしておきます。
 
-    for (const auto &index : indices) {
-      // 距離の増加が最も少ない場所を探します。
-
-      auto [routeIt, it] = [&, &solution = result] {
-        auto result = std::make_tuple(std::begin(solution.getRoutes()), std::begin(*std::begin(solution.getRoutes())));
+    for (const auto &index : resultIndices) {
+      auto [routeIt, it] = [&, &routes = result] { // 距離の増加が最も少ない場所を探します。
+        auto result = std::make_tuple(std::begin(routes), std::begin(*std::begin(routes)));
         auto resultDelta = std::numeric_limits<float>::max();
 
-        for (auto routeIt = std::begin(solution.getRoutes()); routeIt != std::end(solution.getRoutes()); ++routeIt) {
-          if (std::size(*routeIt) >= problem_.getVehicleCapacity()) {
+        for (auto routeIt = std::begin(routes); routeIt != std::end(routes); ++routeIt) {
+          if (std::size(*routeIt) >= problem_.getVehicleCapacity()) { // キャパシティを超えないようにします。制約を満たしているかをLargeNeightborhoodSearchでチェックしていないので、Repairの中で解の正しさを保証しなければなりません。
             continue;
           }
 
@@ -104,12 +113,10 @@ public:
         return result;
       }();
 
-      // 距離の増加が最も少ない場所に追加します。
-
       routeIt->insert(it, index);
     }
 
-    return result;
+    return Solution{result};
   }
 };
 
@@ -125,27 +132,28 @@ public:
     auto result = initialSolution;
     auto resultCost = getCost(problem_, result);
 
-    auto random_number_generator = std::mt19937{seed};
+    auto randomEngine = RandomEngine{seed};
 
-    auto destroy = DestroyHeuristic{problem_, random_number_generator};
-    auto rapair = RapairHeuristic{problem_, random_number_generator};
+    auto destroy = DestroyHeuristic{problem_, randomEngine};
+    auto rapair = RapairHeuristic{problem_, randomEngine};
 
     auto tempSolution = result;
 
-    for (const auto &i : std::views::iota(0, static_cast<int>(problem_.getCustomerSize() * maxChangeRatio))) { // 破壊で削除されるお客様の数を少しずつ増やしていきます。
-      std::cerr << "Removing: " << (i + 1) << std::endl;
+    for (const auto &i : std::views::iota(0, static_cast<int>(problem_.getCustomerSize() * maxChangeRatio))) { // 破壊時に削除されるお客様の数を少しずつ増やしていきます。
+      for (auto improved = true; improved;) {
+        improved = false;
 
-      for (auto j = 0; j < maxTrySize; ++j) { // 一定の回数トライします。
-        tempSolution = rapair(destroy(tempSolution, i + 1));
-        const auto cost = getCost(problem_, tempSolution);
+        for (const auto &_ : std::views::iota(0, maxTrySize)) { // 一定の回数トライします。お客様削除数に合わせて増やした方が良いかもしれません。。。
+          tempSolution = rapair(destroy(tempSolution, i + 1));
+          const auto cost = getCost(problem_, tempSolution);
 
-        if (cost < resultCost) {
-          std::cerr << cost << " <- " << resultCost << std::endl;
+          if (cost < resultCost) {
+            result = tempSolution;
+            resultCost = cost;
 
-          result = tempSolution;
-          resultCost = cost;
-
-          j = -1; // このお客様削除数は有効だと考えて、トライをやり直します。
+            improved = true;
+            break;
+          }
         }
       }
     }

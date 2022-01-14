@@ -12,12 +12,12 @@ using Locations = std::vector<std::tuple<float, float>>;
 using Distances = std::vector<float>;
 using DistanceMatrix = std::vector<Distances>;
 
-using Route = boost::container::small_vector<int, 32>;
-using Routes = boost::container::small_vector<Route, 8>;
+using Route = boost::container::small_vector<int, 64>;
+using Routes = boost::container::small_vector<Route, 16>;
 
 class Problem final {
   int vehicleSize_;
-  int vehicleCapacity_;
+  int vehicleCapacity_; // キャパシティは全車共通にします。あと、キャパシティはすべての顧客を回れる数に自動で設定します（だから問題ファイルにキャパシティの記述はありません）。
   int customerSize_;
   Locations locations_;
   DistanceMatrix distanceMatrix_;
@@ -57,10 +57,6 @@ public:
   }
 
   const auto &getRoutes() const noexcept {
-    return routes_;
-  }
-
-  auto &getRoutes() noexcept {
     return routes_;
   }
 };

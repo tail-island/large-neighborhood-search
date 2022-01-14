@@ -14,3 +14,7 @@ add_executable(large-neighborhood-search
 target_compile_features(large-neighborhood-search PRIVATE
     cxx_std_20
 )
+
+target_compile_options(large-neighborhood-search PRIVATE
+    -march=native
+)

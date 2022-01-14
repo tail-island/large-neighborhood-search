@@ -1,5 +1,5 @@
-import os.path
 import matplotlib.pyplot as plot
+import os.path
 import sys
 
 from funcy import cycle, pairwise
@@ -40,7 +40,7 @@ def main():
     figure.set_figheight(8)
 
     plot.savefig(os.path.join(os.path.dirname(sys.argv[1]), os.path.splitext(os.path.basename(sys.argv[1]))[0] + ".png"))
-    plot.show()
+    # plot.show()
 
 
 if __name__ == '__main__':
