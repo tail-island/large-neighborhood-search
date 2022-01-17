@@ -9,9 +9,6 @@ int main(int argc, char **argv) {
   const auto problem = lns::readProblem(std::cin);
   const auto solution = lns::LargeNeighborhoodSearch{problem}(lns::GreedyAlgorithm{problem}());
 
-  std::cerr << getCost(problem, solution) << std::endl;
-
-
   lns::writeSolution(solution, std::cout);
 
   return 0;

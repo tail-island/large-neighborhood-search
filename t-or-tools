@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for path in $(find $(dirname $0)/data -type f -name \*.txt | sort);
+do
+    echo ${path}
+
+    cat ${path} | python extra/or_tools_solver.py | python extra/visualize_solution.py ${path}
+done
