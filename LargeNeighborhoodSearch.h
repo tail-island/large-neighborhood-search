@@ -38,7 +38,7 @@ public:
 
     for (auto i = 0; i < removeSize;) {
       const auto weights = [&, &routes = std::get<0>(result)] { // ルート選択の重みを作成します。重み付けしないと、短いルートのお客様が選択されやすくなってしまうため。
-        auto result = boost::container::small_vector<int, static_cast<int>(maxCapacity * maxChangeRatio)>{};
+        auto result = boost::container::small_vector<int, static_cast<int>(maxVehicleSize)>{};
 
         std::ranges::copy(
             routes | std::views::transform([](const auto &route) { return std::size(route); }),
