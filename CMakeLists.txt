@@ -18,3 +18,7 @@ target_compile_features(large-neighborhood-search PRIVATE
 target_compile_options(large-neighborhood-search PRIVATE
     -march=native
 )
+
+target_include_directories(large-neighborhood-search PRIVATE
+    "${Boost_INCLUDE_DIRS}"
+)
