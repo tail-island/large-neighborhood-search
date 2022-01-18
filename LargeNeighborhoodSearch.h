@@ -49,10 +49,6 @@ public:
 
       auto &route = std::get<0>(result)[std::discrete_distribution<>{std::begin(weights), std::end(weights)}(randomEngine_)];
 
-      // if (std::empty(route)) {
-      //   continue;
-      // }
-
       const auto it = std::begin(route) + std::uniform_int_distribution{0, static_cast<int>(std::size(route)) - 1}(randomEngine_);
 
       std::get<1>(result).emplace_back(*it);

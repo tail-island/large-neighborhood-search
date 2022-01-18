@@ -49,14 +49,18 @@ def solve(problem):
     return tuple(map(create_route, range(problem['vehicle_count'])))
 
 
-def main():
-    problem = read_problem(sys.stdin)
-    solution = solve(problem)
-
+def write_solution(solution):
     for route in solution:
         for index in route:
             print(index, end='\t')
         print()
+
+
+def main():
+    problem = read_problem(sys.stdin)
+    solution = solve(problem)
+
+    write_solution(solution)
 
 
 if __name__ == '__main__':
