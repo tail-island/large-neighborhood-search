@@ -13,7 +13,7 @@ add_executable(large-neighborhood-search
 
 if (WIN32)
     target_compile_features(large-neighborhood-search PRIVATE
-        cxx_std_23  # C++20までしか使っていないのですけど、Visual Studio 2022だと23にしないとrangeを使えなかった。。。
+        cxx_std_23  # C++20までしか使っていないのですけど、Visual Studio 2022だと23にしないとrangeを使えませんでした。。。
     )
 else()
     target_compile_features(large-neighborhood-search PRIVATE
