@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plot
-import os.path
+# import os.path
 import sys
 
 from funcy import cycle, pairwise, partial
@@ -52,8 +52,8 @@ def main():
 
     print(sum(map(partial(route_to_distance, locations), routes)))
 
-    plot.savefig(os.path.join(os.path.dirname(sys.argv[1]), os.path.splitext(os.path.basename(sys.argv[1]))[0] + ".png"))
-    # plot.show()
+    # plot.savefig(os.path.join(os.path.dirname(sys.argv[1]), os.path.splitext(os.path.basename(sys.argv[1]))[0] + ".png"))
+    plot.show()
 
 
 if __name__ == '__main__':

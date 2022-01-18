@@ -11,13 +11,25 @@ add_executable(large-neighborhood-search
     Model.h
 )
 
-target_compile_features(large-neighborhood-search PRIVATE
-    cxx_std_20
-)
+if (WIN32)
+    target_compile_features(large-neighborhood-search PRIVATE
+        cxx_std_23  # C++20までしか使っていないのですけど、Visual Studio 2022だと23にしないとrangeを使えなかった。。。
+    )
+else()
+    target_compile_features(large-neighborhood-search PRIVATE
+        cxx_std_20
+    )
+endif()
 
-target_compile_options(large-neighborhood-search PRIVATE
-    -march=native
-)
+if (WIN32)
+    target_compile_options(large-neighborhood-search PRIVATE
+        /arch:AVX2
+    )
+else()
+    target_compile_options(large-neighborhood-search PRIVATE
+        -march=native
+    )
+endif()
 
 target_include_directories(large-neighborhood-search PRIVATE
     "${Boost_INCLUDE_DIRS}"
