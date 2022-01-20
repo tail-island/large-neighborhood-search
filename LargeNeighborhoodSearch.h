@@ -37,7 +37,7 @@ public:
     auto result = std::make_tuple(solution.getRoutes(), Indices{});
 
     for (auto i = 0; i < removeSize;) {
-      const auto weights = [&, &routes = std::get<0>(result)] { // ルート選択の重みを作成します。重み付けしないと、短いルートのお客様が選択されやすくなってしまうため。
+      const auto weights = [&, &routes = std::get<0>(result)] { // ルート選択の重みを作成します。重み付けしないと、短いルートのお客様が選択されやすくなってしまうためです。
         auto result = boost::container::small_vector<int, static_cast<int>(maxVehicleSize)>{};
 
         std::ranges::copy(
@@ -81,7 +81,7 @@ public:
     auto result = solution.getRoutes();
     auto resultIndices = indices;
 
-    std::ranges::shuffle(resultIndices, randomEngine_); // 追加順で結果が変わるので、念の為にシャッフルしておきます。
+    std::ranges::shuffle(resultIndices, randomEngine_); // 追加順で結果が変わるので、念の為（今回のRemoveHeuristicだと元々ランダム順だけど、RemoveHeuristicを変更するかもしれない）にシャッフルしておきます。
 
     for (const auto &index : resultIndices) {
       auto [routeIt, it] = [&, &routes = result] { // 距離の増加が最も少ない場所を探します。
