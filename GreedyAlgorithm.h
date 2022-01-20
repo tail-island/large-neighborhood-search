@@ -18,7 +18,7 @@ class GreedyAlgorithm final {
   const Problem &problem_;
 
 public:
-  GreedyAlgorithm(const Problem &problem) noexcept : problem_{problem} {
+  explicit GreedyAlgorithm(const Problem &problem) noexcept : problem_{problem} {
     ;
   }
 
