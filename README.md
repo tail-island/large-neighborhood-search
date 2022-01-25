@@ -18,6 +18,7 @@ Windows OSの場合（PowerShell）。
 ~~~powershell
 > New-Item build -itemType Directory
 > Set-Location .\build\
+> cmake ..
 > msbuild .\large-neighborhood-search.vcxproj /p:Configuration=Release
 > Get-Content ..\data\problem-01.txt | .\Release\large-neighborhood-search.exe | python ..\extra\visualize_solution.py ..\data\problem-01.txt
 ~~~
