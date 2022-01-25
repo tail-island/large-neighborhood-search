@@ -4,7 +4,7 @@ import sys
 
 from funcy import cycle, pairwise, partial
 from math import sqrt
-from matplotlib.collections import LineCollection
+from matplotlib.collections import LineCollection, RegularPolyCollection
 
 
 def read_locations(path):
@@ -43,6 +43,8 @@ def main():
 
     for route, color in zip(routes, cycle(('r', 'g', 'b', 'c', 'm', 'y'))):
         axes.add_collection(LineCollection(tuple(route_to_lines(locations, route)), colors=color))
+
+    axes.add_collection(RegularPolyCollection(len(locations), sizes=(25,), offsets=locations, transOffset=axes.transData, color='black'))
 
     axes.set_xlim(-1, 1)
     axes.set_ylim(-1, 1)
