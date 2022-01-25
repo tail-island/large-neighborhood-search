@@ -19,7 +19,7 @@ constexpr int maxTrySize = 200'000;
 using Indices = boost::container::small_vector<int, static_cast<int>(maxCapacity * maxChangeRatio)>;
 using RandomEngine = std::mt19937;
 
-// 削除用のヒューリスティック。
+// 破壊用のヒューリスティック。
 // とりあえず版です。問題に合わせて修正してください。
 
 class DestroyHeuristic final {
@@ -32,7 +32,7 @@ public:
   }
 
   auto operator()(const Solution &solution, int removeSize) noexcept {
-    // 今回は、ランダムに削除してみました。
+    // 今回は、ランダムに破壊してみました。
 
     auto result = std::make_tuple(solution.getRoutes(), Indices{});
 
@@ -61,7 +61,7 @@ public:
   }
 };
 
-// 追加用のヒューリスティック。
+// 修復用のヒューリスティック。
 // とりあえず版です。問題に合わせて修正してください。
 
 class RapairHeuristic final {
@@ -74,14 +74,14 @@ public:
   }
 
   auto operator()(const std::tuple<Solution, Indices> &solutionAndIndices) noexcept {
-    // 今回は、距離の増加が最も少ない場所に追加してみました。
+    // 今回は、距離の増加が最も少ない場所に挿入する形で修復してみました。
 
     const auto &[solution, indices] = solutionAndIndices;
 
     auto result = solution.getRoutes();
     auto resultIndices = indices;
 
-    std::ranges::shuffle(resultIndices, randomEngine_); // 追加順で結果が変わるので、念の為（今回のRemoveHeuristicだと元々ランダム順だけど、RemoveHeuristicを変更するかもしれない）にシャッフルしておきます。
+    std::ranges::shuffle(resultIndices, randomEngine_); // 挿入する順番で結果が変わるので、念の為（今回のDestroyHeuristicだと元々ランダム順だけど、DestroyHeuristicを変更するかもしれない）にシャッフルしておきます。
 
     for (const auto &index : resultIndices) {
       auto [routeIt, it] = [&, &routes = result] { // 距離の増加が最も少ない場所を探します。
