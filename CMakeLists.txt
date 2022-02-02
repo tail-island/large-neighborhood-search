@@ -32,5 +32,5 @@ else()
 endif()
 
 target_include_directories(large-neighborhood-search PRIVATE
-    "${Boost_INCLUDE_DIRS}"
+    ${Boost_INCLUDE_DIRS}
 )
