@@ -12,7 +12,7 @@
 namespace lns {
 
 // 初期ルート作成用の貪欲法アルゴリズム。
-// とりあえず版です。もっと良い初期ルート作成用のアルゴリズムを使用してください。
+// とりあえず版です。問題に合う初期ルート作成用のアルゴリズムに変更してください。
 
 class GreedyAlgorithm final {
   const Problem &problem_;

@@ -124,11 +124,11 @@ public:
     ;
   }
 
-  auto operator()(const Solution &initialSolution, unsigned int seed = 0) noexcept {
+  auto operator()(const Solution &initialSolution, unsigned int randomSeed = 0) noexcept {
     auto result = initialSolution;
     auto resultCost = getCost(problem_, result);
 
-    auto randomEngine = RandomEngine{seed};
+    auto randomEngine = RandomEngine{randomSeed};
 
     auto destroy = DestroyHeuristic{problem_, randomEngine};
     auto rapair = RapairHeuristic{problem_, randomEngine};

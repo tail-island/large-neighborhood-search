@@ -1,7 +1,5 @@
 Large Neighborhood Searchのサンプル実装です。
 
-Boostを使用しています。開発の際に使用したBoostのバージョンは1.78なのですけど、たぶんもっと前のバージョンでも動作します。環境に合わせてCMakeLists.txtのBoostのバージョンを修正してください。
-
 UnixライクなOSの場合。
 
 ~~~shell
@@ -23,3 +21,5 @@ Windows OSの場合（PowerShell）。
 > Set-Location ..
 > .\t.ps1
 ~~~
+
+メモリ管理を効率化するためにBoostを使用しています（small_vectorサイコー！）。開発の際に使用したBoostのバージョンは1.78ですけど、たぶんもっと前のバージョンでも動作します。環境に合わせてCMakeLists.txtのBoostのバージョンを修正してください。
