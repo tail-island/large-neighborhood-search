@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(large-neighborhood-search LANGUAGES CXX)
 
+cmake_policy(SET CMP0074 NEW)
+
 find_package(Boost 1.78 REQUIRED)
 
 add_executable(large-neighborhood-search
